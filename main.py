@@ -13,6 +13,8 @@ import time
 ev3 = EV3Brick()
 gyro = GyroSensor(Port.S4)
 ser = UARTDevice(Port.S3, baudrate=115200)
+ts = TouchSensor(Port.S1)
+cs = ColorSensor(Port.S2)
 
 #==========[motors]==========
 grab_motor = Motor(Port.B)
@@ -74,15 +76,15 @@ def pd_control(cam_data, kp, kd, power):
 def grab(command):
     if command == 'motion3':
         #close
-        grab_motor.run_until_stalled(100,Stop.COAST,duty_limit=50)
+        grab_motor.run_until_stalled(150,Stop.COAST,duty_limit=50)
         #set_zero point
         grab_motor.reset_angle(0)
     elif command == 'motion1':
         #open1
-        grab_motor.run_until_stalled(-100,Stop.COAST,duty_limit=50)
+        grab_motor.run_until_stalled(-150,Stop.COAST,duty_limit=50)
     elif command == 'motion2':
         #open2
-        grab_motor.run_target(100,-100)
+        grab_motor.run_target(150,-150)
 
 def shoot(command):
     if command == 'zero':
@@ -90,7 +92,7 @@ def shoot(command):
         shooting_motor.run_until_stalled(-100,Stop.COAST,duty_limit=50)
     elif command == 'shoot':
         #shooting
-        shooting_motor.run(1750)
+        shooting_motor.run(2000)
         time.sleep(0.25)
         shooting_motor.stop()
 
@@ -98,7 +100,7 @@ def shoot(command):
 
 #==========[setup]==========
 ev3.speaker.beep()
-threshold = 80
+threshold = 70
 previous_error = 0
 gyro.reset_angle(0)
 #==========[zero set position setting]==========
@@ -113,30 +115,34 @@ print("Zero set postion completed")
 while True:
     data = ser.read_all()
     # 데이터 처리 및 결과 필터링
+    if ts.pressed():
+        robot.straight(-100)
+    if cs.color() == Color.GREEN:
+        robot.straight(-100)
     try:
         filter_result = process_uart_data(data)
         #filter_result[0] : x, filter_result[1] : y
         if filter_result[0]!= -1 and filter_result[1]!= -1:
         # if filter_result[0]!= -1 and filter_result[1]!= -1:
-            if filter_result[1] > 90: #공이 카메라 화면 기준으로 아래에 위치 = 로봇에 가까워졌다
-                robot.straight(150) #강제로 앞으로 이동
+            if filter_result[1] > 110: #공이 카메라 화면 기준으로 아래에 위치 = 로봇에 가까워졌다
+                robot.straight(120) #강제로 앞으로 이동
                 grab('motion3') #공을 잡기
-                time.sleep(1) #동작간 딜레이
-                turn(0,100) #정면(상대방 진영)바라보기
-                time.sleep(1) #동작간 딜레이
+                time.sleep(2) #동작간 딜레이
+                #turn(0,100) #정면(상대방 진영)바라보기
+                time.sleep(0) #동작간 딜레이
                 grab('motion1') #슛을 위한 열기
-                time.sleep(0.5) #동작간 딜레이
+                time.sleep(0) #동작간 딜레이
                 shoot('shoot') #공 날리기
-                time.sleep(0.5) #동작간 딜레이
+                time.sleep(0) #동작간 딜레이
                 shoot('zero')
                 grab('motion2') 
             else: #공이 카메라 화면 기준 멀리 위치해 있으면 chase한다
-                pd_control(filter_result[0], kp=0.5, kd=0.1, power=100)
+                pd_control(filter_result[0], kp=0.7, kd=0.2, power=150)
         # else: # 센서가 공을 보지 못했을 경우의 움직임.
         #     robot.straight(50)
         #     robot.turn(10)
 
-        time.sleep_ms(50)
+        time.sleep_ms(30)
     except:
         pass
 
@@ -146,7 +152,7 @@ while True:
         filter_result = process_uart_data(data)
         if filter_result[0]!= -1 and filter_result[1]!= -1:
             print(filter_result)
-            pd_control(filter_result[0], kp=0.5, kd=0.1, power=100)
+            pd_control(filter_result[0], kp=0.6, kd=0.2, power=150)
         wait(10)
     except:
-        pass
+        pass 
