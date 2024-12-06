@@ -11,7 +11,6 @@ import time
 #==========[Initialize]==========
 #==========[sensors]==========
 ev3 = EV3Brick()
-<<<<<<< HEAD
 gyro = GyroSensor(Port.S1)
 ser = UARTDevice(Port.S2, baudrate=115200)
 
@@ -20,49 +19,19 @@ grab_motor = Motor(Port.A)
 shooting_motor = Motor(Port.B)
 
 left_motor = Motor(Port.C)
-=======
-gyro = GyroSensor(Port.S4)
-ser = UARTDevice(Port.S3, baudrate=115200)
-
-#==========[motors]==========
-grab_motor = Motor(Port.B)
-shooting_motor = Motor(Port.C)
-
-left_motor = Motor(Port.A)
->>>>>>> c9c8da70c6235912e206a4127af12b20a40b9520
 right_motor = Motor(Port.D)
 robot = DriveBase(left_motor, right_motor, wheel_diameter=56, axle_track=115)
 
 #==========[target_angle turn(gyro)]==========
 def turn(target_angle, power):
-<<<<<<< HEAD
 
-    robot.turn()  # 이 부분이 동작하지 않음 (매개변수 없음)
+    robot.turn(target_angle)  # 이 부분이 동작하지 않음 (매개변수 없음)
     print('robot turn')
     robot.drive(power, power)
     while True: 
         angle = gyro.angle()
         print(angle)
         if abs(angle) > target_angle - 2:
-=======
-    
-    left_motor.run(power)
-    right_motor.run(-power)
-    while True:
-        angle=gyro.angle()
-        
-        if abs(angle)>target_angle-2:
-            left_motor.stop()
-            right_motor.stop()
-            break
-    robot.turn()
-    print('robot turn')
-    robot.drive(power, power)
-    while True:
-        angle = gyro.angle()
-        print(angle)
-        if abs(angle)>target_angle-2:
->>>>>>> c9c8da70c6235912e206a4127af12b20a40b9520
             robot.stop()
             break
 
@@ -91,7 +60,7 @@ def pd_control(cam_data, kp, kd, power):
     output = (kp * error) + (kd * derivative)
     robot.drive(power, output)
     previous_error = error
-
+ 
 #==========[shooting positions]==========
 def grab(command):
     if command == 'motion3':
@@ -109,7 +78,7 @@ def grab(command):
 def shoot(command):
     if command == 'zero':
         #zero_position
-        shooting_motor.run_until_stalled(-100,Stop.COAST,duty_limit=50)
+        shooting_motor.run_until_stalled(-180,Stop.COAST,duty_limit=50)
     elif command == 'shoot':
         #shooting
         shooting_motor.run(1750)
@@ -141,34 +110,19 @@ while True:
         if filter_result[0]!= -1 and filter_result[1]!= -1:
         # if filter_result[0]!= -1 and filter_result[1]!= -1:
             if filter_result[1] > 90: #공이 카메라 화면 기준으로 아래에 위치 = 로봇에 가까워졌다
-<<<<<<< HEAD
-                robot.straight(110) #강제로 앞으로 이동
+                robot.straight(115) #강제로 앞으로 이동
                 grab('motion3') #공을 잡기
                 time.sleep(1) #동작간 딜레이
-                print("123")
-                turn(0,100) #정면(상대방 진영)바라보기
+                # turn(0,100) #정면(상대방 진영)바라보기
                 time.sleep(1) #동작간 딜레이
                 grab('motion1') #슛을 위한 열기
                 time.sleep(0.5) #동작간 딜레이d
-=======
-                robot.straight(150) #강제로 앞으로 이동
-                grab('motion3') #공을 잡기
-                time.sleep(1) #동작간 딜레이
-                turn(0,100) #정면(상대방 진영)바라보기
-                time.sleep(1) #동작간 딜레이
-                grab('motion1') #슛을 위한 열기
-                time.sleep(0.5) #동작간 딜레이
->>>>>>> c9c8da70c6235912e206a4127af12b20a40b9520
                 shoot('shoot') #공 날리기
                 time.sleep(0.5) #동작간 딜레이
                 shoot('zero')
                 grab('motion2') 
             else: #공이 카메라 화면 기준 멀리 위치해 있으면 chase한다
-<<<<<<< HEAD
                 pd_control(filter_result[0], kp=0.7, kd=0.1, power=100)
-=======
-                pd_control(filter_result[0], kp=0.5, kd=0.1, power=100)
->>>>>>> c9c8da70c6235912e206a4127af12b20a40b9520
         # else: # 센서가 공을 보지 못했을 경우의 움직임.
         #     robot.straight(50)
         #     robot.turn(10)
@@ -183,16 +137,9 @@ while True:
         filter_result = process_uart_data(data)
         if filter_result[0]!= -1 and filter_result[1]!= -1:
             print(filter_result)
-<<<<<<< HEAD
             pd_control(filter_result[0], kp=0.7, kd=0.1, power=100)
         wait(10)
     except:
         pass
         
 
-=======
-            pd_control(filter_result[0], kp=0.5, kd=0.1, power=100)
-        wait(10)
-    except:
-        pass
->>>>>>> c9c8da70c6235912e206a4127af12b20a40b9520
