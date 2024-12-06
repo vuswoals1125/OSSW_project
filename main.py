@@ -20,6 +20,7 @@ grab_motor = Motor(Port.A)
 shooting_motor = Motor(Port.B)
 
 left_motor = Motor(Port.C)
+<<<<<<< HEAD
 =======
 gyro = GyroSensor(Port.S4)
 ser = UARTDevice(Port.S3, baudrate=115200)
@@ -33,11 +34,14 @@ grab_motor = Motor(Port.B)
 shooting_motor = Motor(Port.C)
 
 left_motor = Motor(Port.A)
+=======
+>>>>>>> pjm3_branch
 right_motor = Motor(Port.D)
 robot = DriveBase(left_motor, right_motor, wheel_diameter=56, axle_track=115)
 
 #==========[target_angle turn(gyro)]==========
 def turn(target_angle, power):
+<<<<<<< HEAD
     
     # left_motor.run(power)
     # right_motor.run(-power)
@@ -55,6 +59,16 @@ def turn(target_angle, power):
         angle = gyro.angle()
         print(angle)
         if abs(angle)>target_angle-2:
+=======
+
+    robot.turn(target_angle)  # 이 부분이 동작하지 않음 (매개변수 없음)
+    print('robot turn')
+    robot.drive(power, power)
+    while True: 
+        angle = gyro.angle()
+        print(angle)
+        if abs(angle) > target_angle - 2:
+>>>>>>> pjm3_branch
             robot.stop()
             break
 
@@ -83,7 +97,7 @@ def pd_control(cam_data, kp, kd, power):
     output = (kp * error) + (kd * derivative)
     robot.drive(power, output)
     previous_error = error
-
+ 
 #==========[shooting positions]==========
 def grab(command):
     if command == 'motion3':
@@ -101,7 +115,7 @@ def grab(command):
 def shoot(command):
     if command == 'zero':
         #zero_position
-        shooting_motor.run_until_stalled(-100,Stop.COAST,duty_limit=50)
+        shooting_motor.run_until_stalled(-180,Stop.COAST,duty_limit=50)
     elif command == 'shoot':
         #shooting
         shooting_motor.run(2000)
@@ -140,14 +154,18 @@ while True:
             if filter_result[1] > 90: #공이 카메라 화면 기준으로 아래에 위치 = 로봇에 가까워졌다
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 robot.straight(110) #강제로 앞으로 이동
+=======
+                robot.straight(115) #강제로 앞으로 이동
+>>>>>>> pjm3_branch
                 grab('motion3') #공을 잡기
                 time.sleep(1) #동작간 딜레이
-                print("123")
-                turn(0,100) #정면(상대방 진영)바라보기
+                # turn(0,100) #정면(상대방 진영)바라보기
                 time.sleep(1) #동작간 딜레이
                 grab('motion1') #슛을 위한 열기
                 time.sleep(0.5) #동작간 딜레이d
+<<<<<<< HEAD
 =======
                 robot.straight(150) #강제로 앞으로 이동
 =======
@@ -171,11 +189,14 @@ while True:
 >>>>>>> mhj3_branch
 =======
 >>>>>>> ba4ee425b3de4330d1c524e87ded11dd67289e96
+=======
+>>>>>>> pjm3_branch
                 shoot('shoot') #공 날리기
                 time.sleep(0) #동작간 딜레이
                 shoot('zero')
                 grab('motion2') 
             else: #공이 카메라 화면 기준 멀리 위치해 있으면 chase한다
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -189,6 +210,9 @@ while True:
 =======
                 pd_control(filter_result[0], kp=0.5, kd=0.1, power=100)
 >>>>>>> ba4ee425b3de4330d1c524e87ded11dd67289e96
+=======
+                pd_control(filter_result[0], kp=0.7, kd=0.1, power=100)
+>>>>>>> pjm3_branch
         # else: # 센서가 공을 보지 못했을 경우의 움직임.
         #     robot.straight(50)
         #     robot.turn(10)
@@ -206,6 +230,9 @@ while True:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> pjm3_branch
             pd_control(filter_result[0], kp=0.7, kd=0.1, power=100)
 =======
             pd_control(filter_result[0], kp=0.5, kd=0.1, power=100)
@@ -215,6 +242,7 @@ while True:
         pass
         
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
             pd_control(filter_result[0], kp=0.5, kd=0.1, power=100)
@@ -230,3 +258,5 @@ while True:
 >>>>>>> mhj3_branch
 =======
 >>>>>>> ba4ee425b3de4330d1c524e87ded11dd67289e96
+=======
+>>>>>>> pjm3_branch
